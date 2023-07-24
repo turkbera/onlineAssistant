@@ -1,0 +1,33 @@
+{% extends 'privacyAssistant/layout.html' %}
+
+{% block title %}
+    Home - PURE
+{% endblock %}
+
+{% block content %}
+    <h1>Welcome to PURE</h1>
+    <p>PURE is Uncertainty-aware Personal Assistant for Making Personalized Privacy Decisions
+
+        A personal privacy assistant (PURE) helps its user make privacy decisions by recommending privacy labels (private or public) for given contents. PURE is unobtrusive, uncertainty-aware, and personalized.</p>
+
+    <form method="post" enctype="multipart/form-data" action="{% url 'index' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="photoInput" class="form-label">Upload a photo:</label>
+            <input type="file" class="form-control" id="photoInput" name="photo">
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+    {% if tags %}
+        <h2>Tags:</h2>
+        <ul>
+            {% for tag in tags %}
+                <li>{{ tag }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if predict %}
+        {{predict}}
+    {% endif %}
+{% endblock %}
