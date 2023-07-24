@@ -1,0 +1,23 @@
+{% extends 'privacyAssistant/layout.html' %}
+
+{% block title %}
+    About - Personal Privacy Assistant
+{% endblock %}
+  
+{% block content %}
+<h1>Your Privacy Assistant</h1>
+<p>
+    Personal Privacy Assistant uses the PEAK model. PEAK is a special privacy assistant designed to help you manage your privacy while using online social networks (OSNs) and Internet of Things (IoT) applications. These systems allow us to share information and use various services, but they also raise concerns about protecting our personal data and privacy.
+</p>
+<p>    
+    The goal of PEAK is to make privacy management easier for you. It reduces the burden of decision-making by offering clear explanations, so you can feel more confident about sharing your images without compromising your privacy. By using PEAK, you can enjoy the benefits of sharing moments with your friends and family while keeping your personal information safe and secure.  
+</p>
+<p>
+    For more detailed information you can check the paper: <a href = "https://arxiv.org/abs/2301.02079">PEAK</a>
+</p>
+
+<p>
+    If you have any questions or suggestions, feel free to contact us at:
+    <a href="mailto:{{ email_address }}">{{ email_address }}</a>
+  </p>
+{% endblock %}

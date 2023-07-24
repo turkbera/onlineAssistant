@@ -20,13 +20,10 @@ classifier_rf = joblib.load(classifier_rf_save_path)
 # Function to extract topics from tags
 def extract_topics_from_tags(tags):
     # Transform the tags using the TF-IDF vectorizer
-    print(tags)
     tags = " ".join([tag for tag in tags])
     tags_tfidf = tfidf_vectorizer.transform([tags])
-    print(tags_tfidf)
     # Use the NMF model to extract topics
     topics = nmf_model.transform(tags_tfidf)
-    print(topics)
     return topics
 
 def index(request):
@@ -46,8 +43,6 @@ def index(request):
         predict = classifier_rf.predict(photo_topics)
         # Pass the extracted tags and topics to the template context
         prediction_privacy = "private" if predict[0] == 0 else "public" 
-
-        print(predict)
         context = {
             'tags': predicted_tags,
             'predict': prediction_privacy
@@ -56,3 +51,10 @@ def index(request):
         return render(request, 'privacyAssistant/index.html', context)
 
     return render(request, 'privacyAssistant/index.html')
+
+def about(request):
+    email_address = 'turk.mbera@gmail.com'  # Replace this with your email address
+    context = {
+        'email_address': email_address
+    }
+    return render(request, 'privacyAssistant/about.html', context)
