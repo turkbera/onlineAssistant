@@ -1,24 +1,41 @@
 {% extends 'privacyAssistant/layout.html' %}
-
 {% block title %}
     Home - Personal Privacy Assistant
 {% endblock %}
 
 {% block content %}
     <h1>Welcome to Personal Privacy Assistant</h1>
-    <p> If you are unsure whether you should share the photo or not, please let your personal privacy assistant decide for you. 
-    </p>
-    <p>    
-        Upload your photo to be shared, and let your privacy assistant provide you with a recommendation(private or public) along with an explanation.</p>
+    <p>If you are unsure whether you should share the photo or not, please let your personal privacy assistant decide for you.</p>
+    <p>Upload your photo to be shared, and let your privacy assistant provide you with a recommendation (private or public) along with an explanation.</p>
+
     <form method="post" enctype="multipart/form-data" action="{% url 'index' %}">
         {% csrf_token %}
         <div class="mb-3">
             <label for="photoInput" class="form-label">Upload a photo:</label>
-            <input type="file" class="form-control" id="photoInput" name="photo" accept="image/*">
+            <input type="file" class="form-control" id="photoInput" name="photo" accept="image/*" required>
+            <small class="form-text text-muted">Please choose a photo to upload.</small>
         </div>
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
+
     {% if predict %}
-        {{predict}}
+        <h2>Recommendation:</h2>
+        <p>The picture is a <span class="recommendation">{{ predict }}</span> picture.</p>
+        <h2>Category:</h2>
+        <p>The category of the picture is {{ category }}</p>
     {% endif %}
+
+    {% if tags %}
+        <h2>Tags:</h2>
+        
+        <ul>
+            {% for tag in tags %}
+                <li>{{ tag }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    
 {% endblock %}
+
+

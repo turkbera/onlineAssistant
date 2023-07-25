@@ -1,21 +1,25 @@
 import os
 import joblib
+from sklearn import metrics
+import pandas as pd
 from django.shortcuts import render
 from onlineAssistant.settings import BASE_DIR
-from .modelPURE.get_tags import get_tags_from_photo
+from .mlModels.get_tags import get_tags_from_photo
+from .mlModels.generate_explanations import generate_exp
 import numpy as np
+import pickle
 
 # Load the saved NMF model
-model_save_path = os.path.join(BASE_DIR, 'privacyAssistant/modelPURE/nmf_model.pkl')
+model_save_path = os.path.join(BASE_DIR, 'privacyAssistant/mlModels/nmf_model.pkl')
 nmf_model = joblib.load(model_save_path)
 
 # Load the TF-IDF vectorizer
-tfidf_vectorizer_save_path = os.path.join(BASE_DIR, 'privacyAssistant/modelPURE/tfidf_vectorizer.pkl')
+tfidf_vectorizer_save_path = os.path.join(BASE_DIR, 'privacyAssistant/mlModels/tfidf_vectorizer.pkl')
 tfidf_vectorizer = joblib.load(tfidf_vectorizer_save_path)
 
 # Load the Random Forest classifier
-classifier_rf_save_path = os.path.join(BASE_DIR, 'privacyAssistant/modelPURE/classifier_rf.pkl')
-classifier_rf = joblib.load(classifier_rf_save_path)
+classifier_rf_save_path = os.path.join(BASE_DIR, 'privacyAssistant/mlModels/classifier_rf.pkl')
+classifier_rf_fit = joblib.load(classifier_rf_save_path)
 
 # Function to extract topics from tags
 def extract_topics_from_tags(tags):
@@ -40,11 +44,25 @@ def index(request):
         
 
         photo_topics = extract_topics_from_tags(predicted_tags)
-        predict = classifier_rf.predict(photo_topics)
-        # Pass the extracted tags and topics to the template context
+        predict = classifier_rf_fit.predict(photo_topics)
+        print("***************PHOTO_TOPICS**************************")
+        print(photo_topics)
+        
+        topics = 20
+        my_list = [str(i) for i in np.arange(topics)]
+        input_columns = list(map(lambda orig_string: 'topic ' + orig_string, my_list))
+        df_topics = pd.DataFrame(photo_topics, columns = input_columns)
+        print(type(df_topics))
+        print(df_topics)
+        
+         # Pass the extracted tags and topics to the template context
+        topics, category = generate_exp(df_topics, predict[0])
+        print(category)
+        print(topics)
         prediction_privacy = "private" if predict[0] == 0 else "public" 
         context = {
             'tags': predicted_tags,
+            'category': category,
             'predict': prediction_privacy
         }
 
