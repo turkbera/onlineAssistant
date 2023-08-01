@@ -48,11 +48,9 @@ df_test_label = pd.DataFrame(test_label, columns = ['label'])
 
 # %%
 def prep_df(df_shapley, df_input):
-    print("***************************prep_Df df_shapley*************************************")
-    print(type(df_shapley))
-    print(df_shapley)
     df_2 = df_shapley.copy().iloc[:, :20]
-
+    print("********************newdf22222222222222222222222222222")
+    print(df_2)
     columns_dict = {0: "topic 0", 1: "topic 1", 
                 2: "topic 2", 3: "topic 3",
                 4: "topic 4", 5: "topic 5",
@@ -96,19 +94,16 @@ len(indexes_public), len(indexes_private)
 
 # %%
 def cat_dominant(dominant_private_ub, dominant_public_ub, df_4, label):
-    # Convert the numpy array to a DataFrame
     
     print("***************************DOMINANT****************************")
     print(df_4)
     if label:
-        
         df_dominant_public_base = df_4.loc[[0]]
         print("****************df_dominant_public_base.max(axis=1) ************************")
         print(df_dominant_public_base.max(axis=1) )
 
         df_dominant_public = df_dominant_public_base[df_dominant_public_base.max(axis=1) >= dominant_public_ub]
         return df_dominant_public
-    # Apply the same logic as before
     else:
         df_dominant_private_base = df_4.loc[[0]]
         df_dominant_private = df_dominant_private_base[df_dominant_private_base.max(axis=1) >= dominant_private_ub]
@@ -190,37 +185,32 @@ def cat_collab(df_2, collaborative_private_ub, collaborative_public_ub, df_domin
 
 def generate_exp(photo_topics, label):
     exp = show_topics_contributions(photo_topics, label).values
+
     topics = 20
     my_list = [str(i) for i in np.arange(topics)]
     input_columns = list(map(lambda orig_string: 'topic ' + orig_string, my_list))
-    df_exp = pd.DataFrame(exp, columns = input_columns)   
+    df_exp = pd.DataFrame(exp, columns = input_columns)
+    print(df_exp)   
     df_2, df_3, df_4 = prep_df(df_exp, photo_topics)
+    
     df_dominant = cat_dominant(0.7, 0.7, df_4, label)
-    print(df_dominant)
+    if not df_dominant.empty:
+        name = "dominant"
+        return df_dominant, name
     indexes_opponent, df_opponent = cat_opponent(0.2, 0.2, df_4, df_2, 1, df_dominant, 0.1, label)
-    print(df_opponent)
-    df_collaborative = cat_collab(df_2, 0.8, 0.8, df_dominant, df_opponent, label)
-    print(df_collaborative)
-    df_weak = df_exp[~df_exp.index.isin(list(df_dominant.index)+list(df_opponent.index)+list(df_collaborative.index))]
-    print(df_weak)
-    flag = 0
-    for topic in [df_dominant, df_opponent, df_collaborative, df_weak]:
-        flag+=1
-        if not (topic.empty):
-            name = ""
-            if flag == 1:
-                name = "dominant"
-                return topic, name
-            elif flag == 2:
-                name = "opponent"
-                return topic, name
-            elif flag == 3:
-                name = "collaborative"
-                return topic, name
-            else:
-                name = "weak"
-                return topic, name
+    if not df_opponent.empty:
+        name = "dominant"
+        return df_opponent, name
 
+    df_collaborative = cat_collab(df_2, 0.8, 0.8, df_dominant, df_opponent, label)
+    if not df_collaborative.empty:
+        name = "dominant"
+        return df_collaborative, name
+    
+    else:
+        df_weak = df_exp[~df_exp.index.isin(list(df_dominant.index)+list(df_opponent.index)+list(df_collaborative.index))]
+        name = "weak"
+        return df_weak, name
 
 # %% [markdown]
 # # Observing misclassified images

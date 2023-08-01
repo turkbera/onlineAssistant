@@ -7,6 +7,7 @@ from onlineAssistant.settings import BASE_DIR
 from .mlModels.get_tags import get_tags_from_photo
 from .mlModels.generate_explanations import generate_exp
 import numpy as np
+import math
 import pickle
 
 # Load the saved NMF model
@@ -45,20 +46,13 @@ def index(request):
 
         photo_topics = extract_topics_from_tags(predicted_tags)
         predict = classifier_rf_fit.predict(photo_topics)
-        print("***************PHOTO_TOPICS**************************")
-        print(photo_topics)
-        
         topics = 20
         my_list = [str(i) for i in np.arange(topics)]
         input_columns = list(map(lambda orig_string: 'topic ' + orig_string, my_list))
         df_topics = pd.DataFrame(photo_topics, columns = input_columns)
-        print(type(df_topics))
-        print(df_topics)
         
          # Pass the extracted tags and topics to the template context
         topics, category = generate_exp(df_topics, predict[0])
-        print(category)
-        print(topics)
         prediction_privacy = "private" if predict[0] == 0 else "public" 
         context = {
             'tags': predicted_tags,

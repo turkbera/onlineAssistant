@@ -46,8 +46,6 @@ classifier_rf_pred = classifier_rf_fit.predict(test_input)
 # # Performance
 
 # %%
-print('Random Forest Accuracy (Train): ', metrics.accuracy_score(classifier_rf_fit.predict(train_input), train_label)) 
-print('Random Forest Accuracy (Test): ', metrics.accuracy_score(classifier_rf_pred, test_label)) 
 
 model_save_path = os.path.join(BASE_DIR, 'privacyAssistant/mlModels/classifier_rf.pkl')
 joblib.dump(classifier_rf_fit, model_save_path)
