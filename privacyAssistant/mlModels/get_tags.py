@@ -19,24 +19,19 @@
 ###################################################################################
 import os
 import pickle
-USER_ID = "clarifai"
-# Your PAT (Personal Access Token) can be found in the portal under Authentification
-PAT = "d04d0e7225924adeb154a90eb136471d"
-APP_ID = "main"
-# MODEL_ID = 'general-image-recognition'
-MODEL_ID = "general-image-recognition"
-# Change this to whatever image URL you want to process
-# IMAGE_URL = 'https://samples.clarifai.com/metro-north.jpg'
-# This is optional. You can specify a model version or the empty string for the default
-MODEL_VERSION_ID = ''
-
+from clarifai_grpc.channel.clarifai_channel import ClarifaiChannel
+from clarifai_grpc.grpc.api import resources_pb2, service_pb2, service_pb2_grpc
+from clarifai_grpc.grpc.api.status import status_code_pb2
+PAT = 'd04d0e7225924adeb154a90eb136471d'
+USER_ID = 'clarifai'
+APP_ID = 'main'
+MODEL_ID = 'general-image-recognition'
+MODEL_VERSION_ID = ''  
 ############################################################################
 # YOU DO NOT NEED TO CHANGE ANYTHING BELOW THIS LINE TO RUN THIS EXAMPLE
 ############################################################################
 
-from clarifai_grpc.channel.clarifai_channel import ClarifaiChannel
-from clarifai_grpc.grpc.api import resources_pb2, service_pb2, service_pb2_grpc
-from clarifai_grpc.grpc.api.status import status_code_pb2
+
 def get_tags_from_photo(file_bytes):
     channel = ClarifaiChannel.get_grpc_channel()
     stub = service_pb2_grpc.V2Stub(channel)
@@ -67,5 +62,6 @@ def get_tags_from_photo(file_bytes):
 
     output = post_model_outputs_response.outputs[0]
     predicted_tags = [concept.name for concept in output.data.concepts]
-
-    return predicted_tags
+    predicted_tags_value = [f"{concept.name}, {concept.value}" for concept in output.data.concepts]
+    comma_separated_strings = ",".join(predicted_tags_value)
+    return predicted_tags, comma_separated_strings

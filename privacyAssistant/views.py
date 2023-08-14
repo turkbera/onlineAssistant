@@ -6,6 +6,7 @@ from django.shortcuts import render
 from onlineAssistant.settings import BASE_DIR
 from .mlModels.get_tags import get_tags_from_photo
 from .mlModels.generate_explanations import generate_exp
+from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 import math
 import pickle
@@ -35,11 +36,11 @@ def index(request):
     if request.method == 'POST':
         # Retrieve the uploaded photo from the request
         photo = request.FILES['photo']
-
         # Process the photo using the get_tags_from_photo function
         photo_bytes = photo.read()
-        predicted_tags = get_tags_from_photo(photo_bytes)
-
+        predicted_tags, predicted_tags_w_comma = get_tags_from_photo(photo_bytes)
+        print("*******************TAGS***********************")
+        print(predicted_tags_w_comma)
         # Convert tags to a list of strings
         # Extract topics from tags using the NMF model
         
@@ -50,14 +51,17 @@ def index(request):
         my_list = [str(i) for i in np.arange(topics)]
         input_columns = list(map(lambda orig_string: 'topic ' + orig_string, my_list))
         df_topics = pd.DataFrame(photo_topics, columns = input_columns)
-        
+        print("********************************DF_TOPICS****************************")
+        print(df_topics)
          # Pass the extracted tags and topics to the template context
-        topics, category = generate_exp(df_topics, predict[0])
+        topics, category, wordcloud, text = generate_exp(df_topics, predict[0], predicted_tags)
         prediction_privacy = "private" if predict[0] == 0 else "public" 
         context = {
             'tags': predicted_tags,
             'category': category,
-            'predict': prediction_privacy
+            'predict': prediction_privacy,
+            'wordcloud': wordcloud,
+            'text':text
         }
 
         return render(request, 'privacyAssistant/index.html', context)
