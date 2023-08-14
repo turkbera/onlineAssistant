@@ -22,11 +22,16 @@ import pickle
 from clarifai_grpc.channel.clarifai_channel import ClarifaiChannel
 from clarifai_grpc.grpc.api import resources_pb2, service_pb2, service_pb2_grpc
 from clarifai_grpc.grpc.api.status import status_code_pb2
+# Your PAT (Personal Access Token) can be found in the portal under Authentification
+# Your PAT (Personal Access Token) can be found in the portal under Authentification
 PAT = 'd04d0e7225924adeb154a90eb136471d'
+# Specify the correct user_id/app_id pairings
+# Since you're making inferences outside your app's scope
 USER_ID = 'clarifai'
 APP_ID = 'main'
+# Change these to whatever model and image URL you want to use
 MODEL_ID = 'general-image-recognition'
-MODEL_VERSION_ID = ''  
+MODEL_VERSION_ID = 'aa9ca48295b37401f8af92ad1af0d91d'
 ############################################################################
 # YOU DO NOT NEED TO CHANGE ANYTHING BELOW THIS LINE TO RUN THIS EXAMPLE
 ############################################################################

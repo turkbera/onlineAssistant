@@ -140,7 +140,8 @@ def cat_opponent(opponent_private_ub, opponent_public_ub, df_4, df_2, opponent_u
     df_n_p = df_6[df_6.apply(lambda x: x > 0)] > 0
     df_n = df_n_n.sum(axis=1).to_frame('negatives')
     df_n["positives"] = df_n_p.sum(axis=1)
-
+    print("******************DF_N*****************")
+    print(df_n)
     df_opponent = df_n[(df_n["negatives"] >= opponent_ub_2) & (df_n["positives"] >= opponent_ub_2)]
     idx_intersect = list(set(df_opponent.index) & set(df_dominant.index))
     df_opponent = df_opponent.drop(idx_intersect)
@@ -184,7 +185,7 @@ def cat_collab(df_2, collaborative_private_ub, collaborative_public_ub, df_domin
 
     return df_collaborative
 
-def dict_top(test_df_dominant, test_df_opponent,test_df_collaborative, test_df_weak):
+def dict_top(test_df_dominant, test_df_opponent,test_df_collaborative, test_df_weak, test_df4, test_df2):
     dominant_dict = {}
     opposing_dict = {}
     weak_dict = {}
@@ -196,13 +197,17 @@ def dict_top(test_df_dominant, test_df_opponent,test_df_collaborative, test_df_w
         opposing_dict = {index: (value1, value2) for index, value1, value2 in zip(test_df2.loc[list(test_df_opponent.index)].idxmin(axis=1).index, test_df2.loc[list(test_df_opponent.index)].idxmin(axis=1).values, test_df2.loc[list(test_df_opponent.index)].idxmax(axis=1).values)}
     if not test_df_collaborative.empty:
         df = test_df4.loc[list(test_df_collaborative.index)]
+        print(df)
         collaborative_dict = df.apply(lambda row: row.nlargest(3).index.tolist(), axis=1).to_dict()
     if not test_df_weak.empty:
         top_weak = test_df4.loc[test_df_weak.index].apply(lambda row: row.nlargest(3).index.tolist(), axis=1)
 
     top_negative = test_df_weak.apply(lambda row: row.nlargest(3).index.tolist(), axis=1)
     top_positive = test_df_weak.apply(lambda row: row.nsmallest(3).index.tolist(), axis=1)
-
+    print("***************TOP_NEGATIVE*********************")
+    print(top_negative)
+    print("*******************************TOP_POSITIVE*****************")
+    print(top_positive)
     intersection_negative = {}
     intersection_positive = {}
     for idx in top_weak.index:
@@ -216,6 +221,14 @@ def dict_top(test_df_dominant, test_df_opponent,test_df_collaborative, test_df_w
 
 
     weak_dict = {key: [intersection_negative.get(key, []), intersection_positive.get(key, [])] for key in set(intersection_negative) | set(intersection_positive)}
+    print("****************************DICT DOMINANT*****************")
+    print(dominant_dict)
+    print("****************************DICT OPPOSSING*****************")
+    print(opposing_dict)
+    print("****************************DICT COLLOBORA*****************")
+    print(collaborative_dict)
+    print("****************************DICT WEAK*****************")
+    print(weak_dict)
     return dominant_dict, opposing_dict, collaborative_dict, weak_dict
 
 def merge_dict_category_topic(dominant_dict, opposing_dict, collaborative_dict, weak_dict):
@@ -273,7 +286,7 @@ def plot_explanations(idx, cat_top_dict, label, w_comma):
         text = f"The generated explanation for this image being assigned to the {predicted_label} class \
                 is that it is related to the topic {topic_text} with these specific tags."
 
-        word_cloud_topics = [topic]
+        word_cloud_topics = topic
         num_circles = len(word_cloud_topics)
 
         if truth_label == predicted_label and truth_label == "private":
@@ -354,9 +367,8 @@ def plot_explanations(idx, cat_top_dict, label, w_comma):
     x, y = np.ogrid[:300, :300]
     mask = (x - 150) ** 2 + (y - 150) ** 2 > 130 ** 2
     mask = 255 * mask.astype(int)
-
+    print(word_cloud_topics)
     contour_color = "darkviolet"  # or darkorange
-
     # Calculate the number of columns based on the number of circles
     num_circles = len(word_cloud_topics)
     # Create the subplots grid
@@ -449,6 +461,10 @@ def generate_exp(photo_topics, label, tags):
     print("******************************DF_EXP******************************")
     print(df_exp)   
     df_2, df_3, df_4 = prep_df(df_exp, photo_topics)
+    print("****************************DF2***************************")
+    print(df_2)
+    print("****************************DF4***************************")
+    print(df_4)
     cleaned_tags_w_comma = str_to_comma_list_single_instance(tags)
     df_dominant = cat_dominant(0.7, 0.7, df_4, label)
     print(df_dominant)
@@ -457,7 +473,7 @@ def generate_exp(photo_topics, label, tags):
     df_weak = pd.DataFrame()
     if not df_dominant.empty:
         name = "dominant"
-        dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak)
+        dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak, df_4, df_2)
         cat_top_dict = merge_dict_category_topic(dominant_dict, opposing_dict, colloborative_dict, weak_dict)
         print("*********************************CAT_TOP_DICT*****************************")
         print(cat_top_dict)
@@ -466,7 +482,7 @@ def generate_exp(photo_topics, label, tags):
     indexes_opponent, df_opponent = cat_opponent(0.2, 0.2, df_4, df_2, 1, df_dominant, 0.1, label)
     print(df_opponent)
     if not df_opponent.empty:
-        dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak)
+        dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak, df_4, df_2)
         cat_top_dict = merge_dict_category_topic(dominant_dict, opposing_dict, colloborative_dict, weak_dict)
         print("*********************************CAT_TOP_DICT*****************************")
         print(cat_top_dict)
@@ -478,7 +494,7 @@ def generate_exp(photo_topics, label, tags):
     print(df_collaborative)
     if not df_collaborative.empty:
         name = "collaborative"
-        dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak)
+        dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak, df_4, df_2)
         cat_top_dict = merge_dict_category_topic(dominant_dict, opposing_dict, colloborative_dict, weak_dict)
         print("*********************************CAT_TOP_DICT*****************************")
         print(cat_top_dict)
@@ -490,7 +506,7 @@ def generate_exp(photo_topics, label, tags):
         df_weak = df_exp[~df_exp.index.isin(list(df_dominant.index)+list(df_opponent.index)+list(df_collaborative.index))]
         print(df_weak)
         name = "weak"
-        dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak)
+        dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak, df_4, df_2)
         cat_top_dict = merge_dict_category_topic(dominant_dict, opposing_dict, colloborative_dict, weak_dict)
         print("*********************************CAT_TOP_DICT*****************************")
         print(cat_top_dict)
