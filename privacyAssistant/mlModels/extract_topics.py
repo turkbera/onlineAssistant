@@ -44,14 +44,11 @@ tfidf_vectorizer = TfidfVectorizer(stop_words='english')
 X = tfidf_vectorizer.fit_transform(df_train.cleaned_tags).toarray()
 print("TFIDF's features: ", tfidf_vectorizer.get_feature_names_out())
 
-print(X)
-print(X[0])
 # %%
 number_of_topics = 20
 nmf_model = NMF(n_components=number_of_topics, init='random', random_state=5)
 nmf_features = nmf_model.fit_transform(X)
 
-print(nmf_features)
 # %%
 # Show tags in the Training data with topic-association
 components_df = pd.DataFrame(nmf_model.components_, columns = tfidf_vectorizer.get_feature_names_out())
@@ -74,14 +71,10 @@ df_train_topic_tag
 
 # %%
 # Transform the TF-IDF
-print("*******************CLENEd TesT**********************************")
-print(df_test.cleaned_tags)
 X_test = tfidf_vectorizer.transform(df_test.cleaned_tags)
 nmf_features_test = nmf_model.transform(X_test)
 pd.DataFrame(nmf_features_test)
-print(df_test.cleaned_tags)
-print(X_test)
-print(nmf_features_test)
+
 # %%
 # Prepare input files for the training and the test
 train_input = pd.DataFrame(nmf_features).to_numpy()

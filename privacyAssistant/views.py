@@ -10,6 +10,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 import math
 import pickle
+from django.shortcuts import redirect
 
 # Load the saved NMF model
 model_save_path = os.path.join(BASE_DIR, 'privacyAssistant/mlModels/nmf_model.pkl')
@@ -31,6 +32,20 @@ def extract_topics_from_tags(tags):
     # Use the NMF model to extract topics
     topics = nmf_model.transform(tags_tfidf)
     return topics
+def result(request):
+    # Retrieve the result data from the session
+    predict = request.session.get('predict')
+    wordcloud = request.session.get('wordcloud')
+    text = request.session.get('text')
+    context = {
+        'predict': predict,
+        'wordcloud': wordcloud,
+        'text': text 
+    }
+
+    return render(request, 'privacyAssistant/result.html', context)
+
+
 
 def index(request):
     if request.method == 'POST':
@@ -39,8 +54,6 @@ def index(request):
         # Process the photo using the get_tags_from_photo function
         photo_bytes = photo.read()
         predicted_tags, predicted_tags_w_comma = get_tags_from_photo(photo_bytes)
-        print("*******************TAGS***********************")
-        print(predicted_tags_w_comma)
         # Convert tags to a list of strings
         # Extract topics from tags using the NMF model
         
@@ -51,11 +64,12 @@ def index(request):
         my_list = [str(i) for i in np.arange(topics)]
         input_columns = list(map(lambda orig_string: 'topic ' + orig_string, my_list))
         df_topics = pd.DataFrame(photo_topics, columns = input_columns)
-        print("********************************DF_TOPICS****************************")
-        print(df_topics)
          # Pass the extracted tags and topics to the template context
         topics, category, wordcloud, text = generate_exp(df_topics, predict[0], predicted_tags)
-        prediction_privacy = "private" if predict[0] == 0 else "public" 
+        prediction_privacy = "private" if predict[0] == 0 else "public"
+        request.session['predict'] = prediction_privacy
+        request.session['wordcloud'] = wordcloud
+        request.session['text'] = text
         context = {
             'tags': predicted_tags,
             'category': category,
@@ -64,7 +78,7 @@ def index(request):
             'text':text
         }
 
-        return render(request, 'privacyAssistant/index.html', context)
+        return redirect(result)
 
     return render(request, 'privacyAssistant/index.html')
 

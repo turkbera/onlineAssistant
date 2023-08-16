@@ -101,17 +101,15 @@ len(indexes_public), len(indexes_private)
 # %%
 def cat_dominant(dominant_private_ub, dominant_public_ub, df_4, label):
     
-    print("***************************DOMINANT****************************")
     if label:
         df_dominant_public_base = df_4.loc[[0]]
-        print(df_dominant_public_base.max(axis=1) )
+    
 
         df_dominant_public = df_dominant_public_base[df_dominant_public_base.max(axis=1) >= dominant_public_ub]
         return df_dominant_public
     else:
         df_dominant_private_base = df_4.loc[[0]]
         df_dominant_private = df_dominant_private_base[df_dominant_private_base.max(axis=1) >= dominant_private_ub]
-        print(df_dominant_private)
         return df_dominant_private
 
 
@@ -122,7 +120,6 @@ def cat_dominant(dominant_private_ub, dominant_public_ub, df_4, label):
 # Define the cat_opponent function
 def cat_opponent(opponent_private_ub, opponent_public_ub, df_4, df_2, opponent_ub_2, df_dominant, paired_ub, label):
     # Convert the numpy arrays to DataFrames
-    print("***************************OPPPOPNNENET****************************")
     if label:
         df_5_public_base = df_4.loc[[0]]
         df_5_public = df_5_public_base.apply(lambda x: x >= opponent_public_ub)
@@ -140,8 +137,6 @@ def cat_opponent(opponent_private_ub, opponent_public_ub, df_4, df_2, opponent_u
     df_n_p = df_6[df_6.apply(lambda x: x > 0)] > 0
     df_n = df_n_n.sum(axis=1).to_frame('negatives')
     df_n["positives"] = df_n_p.sum(axis=1)
-    print("******************DF_N*****************")
-    print(df_n)
     df_opponent = df_n[(df_n["negatives"] >= opponent_ub_2) & (df_n["positives"] >= opponent_ub_2)]
     idx_intersect = list(set(df_opponent.index) & set(df_dominant.index))
     df_opponent = df_opponent.drop(idx_intersect)
@@ -157,7 +152,6 @@ def cat_opponent(opponent_private_ub, opponent_public_ub, df_4, df_2, opponent_u
 def cat_collab(df_2, collaborative_private_ub, collaborative_public_ub, df_dominant, df_conflict, label):
     # Convert the numpy arrays to DataFrames
     
-    print("***************************Collababababaa****************************")
     df_7 = df_2.copy()
     df_8 = df_7[df_7.apply(lambda x: x < 0)].sum(axis=1).to_frame('negatives')
     df_8["positives"] = df_7[df_7.apply(lambda x: x > 0)].sum(axis=1)
@@ -197,22 +191,15 @@ def dict_top(test_df_dominant, test_df_opponent,test_df_collaborative, test_df_w
         opposing_dict = {index: (value1, value2) for index, value1, value2 in zip(test_df2.loc[list(test_df_opponent.index)].idxmin(axis=1).index, test_df2.loc[list(test_df_opponent.index)].idxmin(axis=1).values, test_df2.loc[list(test_df_opponent.index)].idxmax(axis=1).values)}
     if not test_df_collaborative.empty:
         df = test_df4.loc[list(test_df_collaborative.index)]
-        print(df)
         collaborative_dict = df.apply(lambda row: row.nlargest(3).index.tolist(), axis=1).to_dict()
     if not test_df_weak.empty:
         top_weak = test_df4.loc[test_df_weak.index].apply(lambda row: row.nlargest(3).index.tolist(), axis=1)
 
     top_negative = test_df_weak.apply(lambda row: row.nlargest(3).index.tolist(), axis=1)
     top_positive = test_df_weak.apply(lambda row: row.nsmallest(3).index.tolist(), axis=1)
-    print("***************TOP_NEGATIVE*********************")
-    print(top_negative)
-    print("*******************************TOP_POSITIVE*****************")
-    print(top_positive)
     intersection_negative = {}
     intersection_positive = {}
     for idx in top_weak.index:
-        print("********************TOP_WEAK_INDEX********************")
-        print(idx)
         intersection_neg = set(top_weak[idx]).intersection(top_negative[idx])
         intersection_pos = set(top_weak[idx]).intersection(top_positive[idx])
 
@@ -388,9 +375,6 @@ def plot_explanations(idx, cat_top_dict, label, w_comma):
                               contour_color=contour_colors[i], relative_scaling=0)
 
         x = w_comma
-        print(x)
-        print("**********************WORD_CLOUD_TOPICS[i]*********************************")
-        print(word_cloud_topics[i])
         if type(word_cloud_topics[i])== list:
 
             topic_id = int(word_cloud_topics[i][0].split()[-1])
@@ -398,10 +382,9 @@ def plot_explanations(idx, cat_top_dict, label, w_comma):
             topic_id = int(word_cloud_topics.split()[-1])
         else:
             topic_id = int(word_cloud_topics[i].split()[-1])
-        print(list(df_train_topic_tag[topic_id]))
         tags = sorted(set(list(df_train_topic_tag[topic_id])) & set(x), key = list(df_train_topic_tag[topic_id]).index)
         tags = " ".join(tags)
-        print(tags)
+
         if len(tags) == 0:
             continue
         wordcloud.generate(tags)
@@ -450,8 +433,6 @@ def tag_intersect_list(image_id, topic_id, df, df_train_topic_tag):
 
 def generate_exp(photo_topics, label, tags):
     exp = show_topics_contributions(photo_topics, label)
-    print("***********************EXP****************************")
-    print(exp)
     exp = exp.values
 
     topics = 20
@@ -461,13 +442,9 @@ def generate_exp(photo_topics, label, tags):
     print("******************************DF_EXP******************************")
     print(df_exp)   
     df_2, df_3, df_4 = prep_df(df_exp, photo_topics)
-    print("****************************DF2***************************")
-    print(df_2)
-    print("****************************DF4***************************")
-    print(df_4)
     cleaned_tags_w_comma = str_to_comma_list_single_instance(tags)
     df_dominant = cat_dominant(0.7, 0.7, df_4, label)
-    print(df_dominant)
+
     df_opponent = pd.DataFrame()
     df_collaborative = pd.DataFrame()
     df_weak = pd.DataFrame()
@@ -475,41 +452,34 @@ def generate_exp(photo_topics, label, tags):
         name = "dominant"
         dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak, df_4, df_2)
         cat_top_dict = merge_dict_category_topic(dominant_dict, opposing_dict, colloborative_dict, weak_dict)
-        print("*********************************CAT_TOP_DICT*****************************")
-        print(cat_top_dict)
         wordcloud, text = plot_explanations(0, cat_top_dict, label, tags)
         return df_dominant, name, wordcloud, text
     indexes_opponent, df_opponent = cat_opponent(0.2, 0.2, df_4, df_2, 1, df_dominant, 0.1, label)
-    print(df_opponent)
+
     if not df_opponent.empty:
         dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak, df_4, df_2)
         cat_top_dict = merge_dict_category_topic(dominant_dict, opposing_dict, colloborative_dict, weak_dict)
-        print("*********************************CAT_TOP_DICT*****************************")
-        print(cat_top_dict)
+
         wordcloud, text = plot_explanations(0, cat_top_dict, label, tags)
         name = "opponent"
         return df_opponent, name, wordcloud, text
 
     df_collaborative = cat_collab(df_2, 0.8, 0.8, df_dominant, df_opponent, label)
-    print(df_collaborative)
+
     if not df_collaborative.empty:
         name = "collaborative"
         dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak, df_4, df_2)
         cat_top_dict = merge_dict_category_topic(dominant_dict, opposing_dict, colloborative_dict, weak_dict)
-        print("*********************************CAT_TOP_DICT*****************************")
-        print(cat_top_dict)
         wordcloud, text = plot_explanations(0, cat_top_dict, label, tags)
 
         return df_collaborative, name, wordcloud, text
     
     else:
         df_weak = df_exp[~df_exp.index.isin(list(df_dominant.index)+list(df_opponent.index)+list(df_collaborative.index))]
-        print(df_weak)
+
         name = "weak"
         dominant_dict, opposing_dict, colloborative_dict, weak_dict = dict_top(df_dominant, df_opponent,df_collaborative, df_weak, df_4, df_2)
         cat_top_dict = merge_dict_category_topic(dominant_dict, opposing_dict, colloborative_dict, weak_dict)
-        print("*********************************CAT_TOP_DICT*****************************")
-        print(cat_top_dict)
         wordcloud, text = plot_explanations(0, cat_top_dict, label, tags)
 
         return df_weak, name, wordcloud, text

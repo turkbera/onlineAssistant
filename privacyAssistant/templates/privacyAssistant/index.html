@@ -4,39 +4,31 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Welcome to Personal Privacy Assistant</h1>
+<div class="welcome" style ="text-align:center;margin-top: 80px; margin-bottom: 20px;">
+    <h1>Personal Privacy Assistant</h1>
+</div>
+<div class="welcome-exp" style ="text-align:center; margin-bottom: 20px;">
     <p>If you are unsure whether you should share the photo or not, let your personal privacy assistant decide for you.</p>
     <p>Upload a photo to get a recommendation (private or public) along with an explanation.</p>
-
-    <form method="post" enctype="multipart/form-data" action="{% url 'index' %}">
+</div>
+    
+    <form id="upload-form" method="post" enctype="multipart/form-data" action="{% url 'index' %}">
         {% csrf_token %}
-        <div class="mb-3">
+        <div class="mb-3" style="align-items: center; text-align: center;">
             <label for="photoInput" class="form-label">Upload a photo:</label>
             <input type="file" class="form-control" id="photoInput" name="photo" accept="image/*" required>
             <small class="form-text text-muted">Choose a photo to upload.</small>
         </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
+        <div class="button-upload" style="align-items: center; text-align: center;">
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </div>
     </form>
 
-    {% if predict %}
-        <div class="result">
-            <h2>Recommendation:</h2>
-            <p>The picture is <span class="recommendation">{{ predict }}</span>.</p>
-        </div>
-    {% endif %}
+    <div id="loading" style="display: none; text-align: center; margin-top: 20px;">Processing the picture, please wait...</div>
 
-    {% if wordcloud %}
-        <div class="explanations-container">
-            <h2>Explanations:</h2>
-            <p class="explanation-text">{{ text }}</p>
-        </div>
-        <div class="wordclouds-container">
-            {% for image_data, topic in wordcloud %}
-                <div class="wordcloud">
-                    <h3>Word Cloud for Topic {{ topic }}</h3>
-                    <img src="data:image/png;base64,{{ image_data }}" alt="WordCloud">
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function() {
+            document.getElementById('loading').style.display = 'block';
+        });
+    </script>
 {% endblock %}

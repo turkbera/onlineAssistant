@@ -1,0 +1,54 @@
+{% extends 'privacyAssistant/layout.html' %}
+{% block title %}
+    Result - Personal Privacy Assistant
+{% endblock %}
+
+{% block content %}
+
+    {% if predict %}
+        <div class="result" style = "text-align:center; margin-top: 80px; margin-bottom: 20px;">
+            
+            <h4>Personal Privacy Assistant classifies this picture as:</h4>
+            <h3><span class="{{ predict|lower }}">{{ predict }}</span</h3>
+        </div>
+
+    {% endif %}
+
+    {% if wordcloud %}
+        <div class="explanations-container">
+            <h4 class = "explanations-container-title" style="color:darkcyan;">Why?</h4>
+            <p class="explanation-text" style="font-size: 18px;">{{ text }}</p>
+        </div>
+        <div class="wordclouds-container" style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+
+            {% for image_data, topic in wordcloud %}
+                <div class="wordcloud" style="flex: 1 0 20%; min-width: 200px; margin-bottom: 20px;">
+                    <h4 >Word Cloud for Topic {{ topic }}</h4>
+                    <img src="data:image/png;base64,{{ image_data }}" alt="WordCloud" style="max-width: 100%;">
+                </div>
+            {% endfor %}
+        
+        </div>
+        
+        <style>
+            @media (max-width: 768px) {
+                .wordclouds-container {
+                    justify-content: center;
+                }
+                .wordcloud {
+                    flex-basis: 45%;
+                }
+            }
+
+            .private {
+                color: darkviolet;
+            }
+            .public {
+                color: darkorange;
+            }
+ 
+
+        </style>
+        
+    {% endif %}
+{% endblock %}
