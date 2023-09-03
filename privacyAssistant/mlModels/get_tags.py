@@ -40,7 +40,6 @@ MODEL_VERSION_ID = 'aa9ca48295b37401f8af92ad1af0d91d'
 def get_tags_from_photo(file_bytes):
     channel = ClarifaiChannel.get_grpc_channel()
     stub = service_pb2_grpc.V2Stub(channel)
-
     metadata = (('authorization', 'Key ' + PAT),)
 
     userDataObject = resources_pb2.UserAppIDSet(user_id=USER_ID, app_id=APP_ID)

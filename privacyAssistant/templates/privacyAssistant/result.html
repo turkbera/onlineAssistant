@@ -22,7 +22,7 @@
         <div class="wordclouds-container" style="display: flex; flex-wrap: wrap; justify-content: space-between;">
 
             {% for image_data, topic in wordcloud %}
-                <div class="wordcloud" style="flex: 1 0 20%; min-width: 200px; margin-bottom: 20px;">
+                <div class="wordcloud" style="flex: 1 0 20%; min-width: 200px; margin-bottom: 20px; text-align: center; justify-content: center;">
                     <h4 >Word Cloud for Topic {{ topic }}</h4>
                     <img src="data:image/png;base64,{{ image_data }}" alt="WordCloud" style="max-width: 100%;">
                 </div>

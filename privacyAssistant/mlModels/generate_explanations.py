@@ -208,14 +208,6 @@ def dict_top(test_df_dominant, test_df_opponent,test_df_collaborative, test_df_w
 
 
     weak_dict = {key: [intersection_negative.get(key, []), intersection_positive.get(key, [])] for key in set(intersection_negative) | set(intersection_positive)}
-    print("****************************DICT DOMINANT*****************")
-    print(dominant_dict)
-    print("****************************DICT OPPOSSING*****************")
-    print(opposing_dict)
-    print("****************************DICT COLLOBORA*****************")
-    print(collaborative_dict)
-    print("****************************DICT WEAK*****************")
-    print(weak_dict)
     return dominant_dict, opposing_dict, collaborative_dict, weak_dict
 
 def merge_dict_category_topic(dominant_dict, opposing_dict, collaborative_dict, weak_dict):
@@ -238,8 +230,6 @@ def merge_dict_category_topic(dominant_dict, opposing_dict, collaborative_dict, 
 def plot_explanations(idx, cat_top_dict, label, w_comma):
     category_name = cat_top_dict.get(idx)[0]
     label = "private" if label == 0 else "public" 
-    print("*******************CAT_TOP_DICT*********************************")
-    print(cat_top_dict)
     truth_label = label
     # image_id = 4398397540
     predicted_label = label
@@ -272,8 +262,10 @@ def plot_explanations(idx, cat_top_dict, label, w_comma):
         # feel free to rename topics based on your topic modelling result
         text = f"The generated explanation for this image being assigned to the {predicted_label} class \
                 is that it is related to the topic {topic_text} with these specific tags."
-
-        word_cloud_topics = topic
+        if type(topic)==str:
+            word_cloud_topics = [topic]
+        else:
+            word_cloud_topics = topic
         num_circles = len(word_cloud_topics)
 
         if truth_label == predicted_label and truth_label == "private":
@@ -368,7 +360,8 @@ def plot_explanations(idx, cat_top_dict, label, w_comma):
 
     # Create WordClouds and plot circles in the remaining columns
     wordclouds = []  # List to hold the generated WordCloud objects
-
+    print(contour_colors) 
+    print(num_circles)
     for i in range(num_circles):
         wordcloud = WordCloud(width=500, height=300, margin=3, prefer_horizontal=0.7, scale=1,
                               background_color="white", mask=mask, contour_width=0.1,
@@ -439,8 +432,6 @@ def generate_exp(photo_topics, label, tags):
     my_list = [str(i) for i in np.arange(topics)]
     input_columns = list(map(lambda orig_string: 'topic ' + orig_string, my_list))
     df_exp = pd.DataFrame(exp, columns = input_columns)
-    print("******************************DF_EXP******************************")
-    print(df_exp)   
     df_2, df_3, df_4 = prep_df(df_exp, photo_topics)
     cleaned_tags_w_comma = str_to_comma_list_single_instance(tags)
     df_dominant = cat_dominant(0.7, 0.7, df_4, label)

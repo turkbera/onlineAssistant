@@ -11,6 +11,12 @@ import numpy as np
 import math
 import pickle
 from django.shortcuts import redirect
+dataset_dir = '/home/bera/Desktop/uzco/peak/dataset_dir'
+pickle_dir = '/home/bera/Desktop/uzco/peak/pickle_dir'
+train_input = pickle.load(open(pickle_dir+"/train_input.pickle", "rb"))
+test_input = pickle.load(open(pickle_dir+"/test_input.pickle", "rb"))
+train_label = pickle.load(open(pickle_dir+"/train_label.pickle", "rb"))
+test_label = pickle.load(open(pickle_dir+"/test_label.pickle", "rb"))
 
 # Load the saved NMF model
 model_save_path = os.path.join(BASE_DIR, 'privacyAssistant/mlModels/nmf_model.pkl')
@@ -60,6 +66,10 @@ def index(request):
 
         photo_topics = extract_topics_from_tags(predicted_tags)
         predict = classifier_rf_fit.predict(photo_topics)
+        classifier_rf_pred = classifier_rf_fit.predict(test_input)
+        print('Random Forest Accuracy (Train): ', metrics.accuracy_score(classifier_rf_fit.predict(train_input), train_label)) 
+        print('Random Forest Accuracy (Test): ', metrics.accuracy_score(classifier_rf_pred, test_label)) 
+
         topics = 20
         my_list = [str(i) for i in np.arange(topics)]
         input_columns = list(map(lambda orig_string: 'topic ' + orig_string, my_list))
