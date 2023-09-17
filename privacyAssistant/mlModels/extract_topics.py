@@ -19,7 +19,10 @@ import os
 # %%
 # "dataset_dir" is the folder which has the Train and Test datasets
 # you should create this folder uploading datasets in the repo.
-dataset_dir = '/home/bera/Desktop/uzco/peak/dataset_dir'
+dataset_dir = str(BASE_DIR) + '/privacyAssistant/dataset_dir'
+pickle_dir = str(BASE_DIR) + '/privacyAssistant/pickle_dir'
+
+
 
 df_train = pd.read_csv(dataset_dir +"/df_train.csv")
 df_test = pd.read_csv(dataset_dir +"/df_test.csv")

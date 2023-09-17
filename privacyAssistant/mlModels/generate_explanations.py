@@ -8,6 +8,7 @@ import pickle
 from IPython.display import display
 import shap
 from .classify_images import show_topics_contributions
+from onlineAssistant.settings import BASE_DIR
 import ast
 from wordcloud import WordCloud
 import numpy as np
@@ -24,8 +25,8 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 # %%
 # you can change the path of the directory based on where you saved the repo.
-dataset_dir = '/home/bera/Desktop/uzco/peak/dataset_dir'
-pickle_dir = '/home/bera/Desktop/uzco/peak/pickle_dir'
+dataset_dir = str(BASE_DIR) + '/privacyAssistant/dataset_dir'
+pickle_dir = str(BASE_DIR) + '/privacyAssistant/pickle_dir'
 
 
 # %%

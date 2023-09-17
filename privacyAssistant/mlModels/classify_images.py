@@ -17,8 +17,8 @@ import os, joblib
 
 # %%
 # you can change the path of the directory based on where you saved the repo.
-dataset_dir = '/home/bera/Desktop/uzco/peak/dataset_dir'
-pickle_dir = '/home/bera/Desktop/uzco/peak/pickle_dir'
+dataset_dir = str(BASE_DIR) + '/privacyAssistant/dataset_dir'
+pickle_dir = str(BASE_DIR) + '/privacyAssistant/pickle_dir'
 
 
 # %%
