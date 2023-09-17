@@ -1,0 +1,16 @@
+clarifai-grpc
+grpcio
+wordcloud
+Pillow
+ipython
+nltk
+AST
+isort
+Django
+pandas
+numpy
+scikit-learn
+shap
+matplotlib
+joblib
+
