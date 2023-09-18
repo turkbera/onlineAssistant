@@ -1,6 +1,5 @@
 absl-py
 appdirs
-apt-clone
 apturl
 asgiref
 astroid
