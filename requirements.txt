@@ -14,3 +14,4 @@ shap
 matplotlib
 joblib
 Django
+whitenoise
