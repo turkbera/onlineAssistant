@@ -4,7 +4,6 @@ wordcloud
 Pillow
 ipython
 nltk
-AST
 isort
 Django
 pandas
