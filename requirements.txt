@@ -4,6 +4,7 @@ wordcloud
 Pillow
 ipython
 nltk
+gunicorn
 isort
 Django
 pandas
