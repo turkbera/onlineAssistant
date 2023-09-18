@@ -11,6 +11,8 @@ import numpy as np
 import math
 import pickle
 from django.shortcuts import redirect
+from django.views.decorators.csrf import csrf_protect
+from django.contrib import messages
 
 # Load the saved NMF model
 model_save_path = os.path.join(BASE_DIR, 'privacyAssistant/mlModels/nmf_model.pkl')
@@ -45,8 +47,7 @@ def result(request):
 
     return render(request, 'privacyAssistant/result.html', context)
 
-
-
+@csrf_protect
 def index(request):
     if request.method == 'POST':
         # Retrieve the uploaded photo from the request
@@ -54,18 +55,14 @@ def index(request):
         # Process the photo using the get_tags_from_photo function
         photo_bytes = photo.read()
         predicted_tags, predicted_tags_w_comma = get_tags_from_photo(photo_bytes)
-        # Convert tags to a list of strings
-        # Extract topics from tags using the NMF model
-        
-
         photo_topics = extract_topics_from_tags(predicted_tags)
         predict = classifier_rf_fit.predict(photo_topics)
 
         topics = 20
         my_list = [str(i) for i in np.arange(topics)]
         input_columns = list(map(lambda orig_string: 'topic ' + orig_string, my_list))
-        df_topics = pd.DataFrame(photo_topics, columns = input_columns)
-         # Pass the extracted tags and topics to the template context
+        df_topics = pd.DataFrame(photo_topics, columns=input_columns)
+        # Pass the extracted tags and topics to the template context
         topics, category, wordcloud, text = generate_exp(df_topics, predict[0], predicted_tags)
         prediction_privacy = "private" if predict[0] == 0 else "public"
         request.session['predict'] = prediction_privacy
@@ -76,10 +73,10 @@ def index(request):
             'category': category,
             'predict': prediction_privacy,
             'wordcloud': wordcloud,
-            'text':text
+            'text': text
         }
 
-        return redirect(result)
+        return redirect('result')
 
     return render(request, 'privacyAssistant/index.html')
 
